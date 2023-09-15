@@ -2,25 +2,55 @@
 using FD.Models;
 using FD.Services;
 using Newtonsoft.Json;
-
-static void Main()
+public class Program
 {
-    Console.WriteLine("Please enter the filename of the energy plan (e.g., plan.json):");
-    string filename = Console.ReadLine();
-
-    if (!System.IO.File.Exists(filename))
+    static List<EnergyPlan> LoadPlans(string filename)
     {
-        Console.WriteLine("File not found!");
-        return;
+        string json = System.IO.File.ReadAllText(filename);
+        return JsonConvert.DeserializeObject<List<EnergyPlan>>(json);
     }
 
-    string json = System.IO.File.ReadAllText(filename);
-    var energyPlan = JsonConvert.DeserializeObject<EnergyPlan>(json);
-    IPlanEvaluator evaluator = new PlanEvaluatorService();
+    static void Main()
+    {
+        Console.WriteLine("Please enter the filename of the energy plans (e.g., plans.json):");
+        string filename = "C:\\Users\\santi\\source\\repos\\FD\\RiskTechnicalTest\\plans.json"; //s Console.ReadLine();
 
-    var cost = evaluator.CalculateCost(energyPlan, 300);
-    Console.WriteLine($"Cost for 300 kWh: £{cost}");
+        if (!System.IO.File.Exists(filename))
+        {
+            Console.WriteLine("File not found!");
+            return;
+        }
 
-    var energy = evaluator.CalculateEnergy(energyPlan, cost);
-    Console.WriteLine($"Energy for £{cost}: {energy} kWh");
+        var energyPlans = LoadPlans(filename);
+        IPlanEvaluator evaluator = new PlanEvaluatorService();
+
+        Console.WriteLine("Enter command:");
+        string command = Console.ReadLine();
+
+        while (command != "exit")
+        {
+            if (command.StartsWith("annual_cost "))
+            {
+                int consumption = int.Parse(command.Split(' ')[1]);
+
+                var results = energyPlans.Select(plan => new
+                {
+                    SupplierName = plan.SupplierName,
+                    PlanName = plan.PlanName,
+                    Cost = evaluator.CalculateCost(plan, consumption)
+                })
+                .OrderBy(x => x.Cost)
+                .Take(4); // Assuming you want to list the top 4 plans based on the provided example
+
+                foreach (var result in results)
+                {
+                    Console.WriteLine($"{result.SupplierName},{result.PlanName},{result.Cost:F2}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid command");
+            }
+        }
+    }
 }
