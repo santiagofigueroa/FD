@@ -12,6 +12,7 @@ namespace FD.Models
         [JsonProperty("plan_name")]
         public string PlanName { get; set; }
         public List<Price> Prices { get; set; }
+        [JsonProperty("standing_charge")]
         public decimal StandingCharge { get; set; }
     }
 }

@@ -2,3 +2,6 @@
 /FD/bin
 /.vs/FD
 /.vs/ProjectEvaluation
+/FD.Tests/bin/
+/FD.Tests/obj
+/packages

@@ -5,50 +5,33 @@ namespace FD.Services
 {
     public class PlanEvaluatorService : IPlanEvaluator
     {
+        //VAT 5% 
         private const decimal VAT = 0.05m;
 
         public decimal CalculateCost(EnergyPlan plan, int consumption)
         {
-            decimal cost = plan.StandingCharge;
+            // Convert daily standing charge from pence to pounds and then multiply by 365 of the year
+            decimal annualStandingCharge = (plan.StandingCharge / 100.0m) * 365;   
+            decimal cost = annualStandingCharge;
             int remainingConsumption = consumption;
 
             foreach (var price in plan.Prices)
             {
+                decimal rateInPounds = price.Rate / 100.0m;  // Convert rate from pence to pounds
                 if (!price.Threshold.HasValue || remainingConsumption <= price.Threshold)
                 {
-                    cost += price.Rate * remainingConsumption;
+                    cost += rateInPounds * remainingConsumption;
                     break;
                 }
                 else
                 {
-                    cost += price.Rate * price.Threshold.Value;
+                    cost += rateInPounds * price.Threshold.Value;
                     remainingConsumption -= price.Threshold.Value;
                 }
             }
 
-            return cost * (1 + VAT);
-        }
-
-        public int CalculateEnergy(EnergyPlan plan, decimal spend)
-        {
-            decimal remainingSpend = (spend / (1 + VAT)) - plan.StandingCharge;
-            int totalEnergy = 0;
-
-            foreach (var price in plan.Prices)
-            {
-                if (!price.Threshold.HasValue || remainingSpend < price.Rate * price.Threshold)
-                {
-                    totalEnergy += (int)(remainingSpend / price.Rate);
-                    break;
-                }
-                else
-                {
-                    totalEnergy += price.Threshold.Value;
-                    remainingSpend -= price.Rate * price.Threshold.Value;
-                }
-            }
-
-            return totalEnergy;
+            cost *= (1 + VAT);
+            return Math.Round(cost, 2);
         }
     }
 }
