@@ -2,7 +2,6 @@
 using FD.Models;
 using FD.Services;
 using Newtonsoft.Json;
-using System.Runtime.InteropServices;
 
 public class Program
 {
@@ -59,7 +58,7 @@ public class Program
             }
         }
     }
-
+    //Json Serialization   
     public static List<EnergyPlan> LoadPlans(string filename)
     {
         string json = System.IO.File.ReadAllText(filename);

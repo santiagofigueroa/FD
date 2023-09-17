@@ -21,4 +21,10 @@
     <ProjectReference Include="..\FD\FD.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\plans.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

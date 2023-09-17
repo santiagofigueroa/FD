@@ -15,8 +15,8 @@ namespace FD.Tests
         [SetUp]
         public void Setup()
         {
-            // Assume you have a method to load plans like the one in your Program class
-            _energyPlans = Program.LoadPlans("C:\\Users\\santi\\source\\repos\\FD\\RiskTechnicalTest\\plans.json");
+            // TODO: Place full plan.json for test to be applied
+            _energyPlans = Program.LoadPlans("./Data/plans.json");
             _evaluator = new PlanEvaluatorService();
         }
 
